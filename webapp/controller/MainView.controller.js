@@ -5,11 +5,15 @@ sap.ui.define([
   "use strict";
 
   return Controller.extend("documentinfoextractor.controller.MainView", {
+
     onInit: function () {
-      // Initialization logic can go here if needed
+      // Initialization logic, if needed, can be added here
     },
 
-    // File Uploader Handlers
+    /**
+     * Handles the completion of file upload.
+     * Displays a success or error message based on the HTTP status code.
+     */
     handleUploadComplete: function (oEvent) {
       var sResponse = oEvent.getParameter("response"),
         iHttpStatusCode = parseInt(/\d{3}/.exec(sResponse)[0], 10),
@@ -24,12 +28,17 @@ sap.ui.define([
       }
     },
 
+    /**
+     * Handles the file upload button press.
+     * Ensures a file is selected and attempts to upload it.
+     */
     handleUploadPress: function () {
-      var oFileUploader = this.byId("fileUploader");
+      var oFileUploader = this.byId("fileUploaderMain"); // Adjusted ID
       if (!oFileUploader.getValue()) {
-        MessageToast.show("Choose a file first");
+        MessageToast.show("Please choose a file before uploading.");
         return;
       }
+
       oFileUploader
         .checkFileReadable()
         .then(
@@ -37,16 +46,18 @@ sap.ui.define([
             oFileUploader.upload();
           },
           function () {
-            MessageToast.show(
-              "The file cannot be read. It may have changed."
-            );
+            MessageToast.show("The file cannot be read. It may have changed.");
           }
         )
-        .then(function () {
+        .finally(function () {
           oFileUploader.clear();
         });
     },
 
+    /**
+     * Handles file type mismatch errors.
+     * Displays supported file types to the user.
+     */
     handleTypeMissmatch: function (oEvent) {
       var aFileTypes = oEvent.getSource().getFileType();
       aFileTypes = aFileTypes.map(function (sType) {
@@ -55,31 +66,49 @@ sap.ui.define([
       MessageToast.show(
         "The file type *." +
           oEvent.getParameter("fileType") +
-          " is not supported. Choose one of the following types: " +
+          " is not supported. Supported types are: " +
           aFileTypes.join(", ")
       );
     },
 
+    /**
+     * Handles changes in file input.
+     * Previews the selected file and shows a toast message.
+     */
     handleValueChange: function (oEvent) {
       var oFile = oEvent.getParameter("files")[0];
 
       if (oFile) {
         var oReader = new FileReader();
+
         oReader.onload = function (e) {
           // Set the preview image source and make it visible
           var oImage = this.byId("filePreview");
           oImage.setSrc(e.target.result);
           oImage.setVisible(true);
 
-          // Show the "File Preview" label
+          // Show the "File Preview" text
           this.byId("previewText").setVisible(true);
+
+          // Make the Proceed button visible
+          this.byId("proceedButton").setVisible(true);
         }.bind(this);
 
+        // Read the file as a data URL for preview
         oReader.readAsDataURL(oFile);
         MessageToast.show("File selected: " + oFile.name);
       } else {
         MessageToast.show("No file selected.");
       }
+    },
+
+    /**
+     * Handles the Proceed button press.
+     * Can be customized with further logic.
+     */
+    onProceedPress: function () {
+      MessageToast.show("Proceeding with the selected file.");
+      // Add custom logic here for proceeding with the file
     }
   });
 });

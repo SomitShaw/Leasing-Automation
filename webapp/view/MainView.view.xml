@@ -3,36 +3,58 @@
   xmlns="sap.m"
   xmlns:l="sap.ui.layout"
   xmlns:u="sap.ui.unified"
+  xmlns:form="sap.ui.layout.form"
   controllerName="documentinfoextractor.controller.MainView">
   
   <!-- HBox for horizontal split layout -->
   <HBox id="screendiv">
     
     <!-- Left Box for Inputs -->
-    <VBox id="leftdiv" width="50%" justifyContent="Center" alignItems="Start">
+    <VBox id="leftdiv" width="50%" justifyContent="Start" alignItems="Stretch">
       
-      <!-- Contract Type Input -->
-      <Label id="labelContractType" text="Contract Type" />
-      <Input id="inputContractType" placeholder="Enter contract type" />
-      
-      <!-- Effective Date Input -->
-      <Label id="labelEffectiveDate" text="Effective Date" />
-      <Input id="inputEffectiveDate" placeholder="Enter effective date" type="Date" />
+      <!-- Simple Form for Input Fields -->
+      <form:SimpleForm id="inputForm" layout="ColumnLayout" editable="true">
+        <form:toolbar>
+          <OverflowToolbar id="overflowtool">
+            <Title id="title" text="Information Extraction:" />
+            <ToolbarSpacer id="toolbarspacer" />
+            <!--ToggleButton
+              text="Edit"
+              type="Emphasized"
+              pressed="{path: 'view>/editMode'}" /-->
+          </OverflowToolbar>
+        </form:toolbar>
 
-      <!-- Expiry Date Input -->
-      <Label id="labelExpiryDate" text="Expiry Date" />
-      <Input id="inputExpiryDate" placeholder="Enter expiry date" type="Date" />
+        <!-- Contract Type Input -->
+        <Label id="labelContractType" text="Contract Type" />
+        <Input id="inputContractType" placeholder="Enter contract type" value="{view>/contractType}" editable="{view>/editMode}" />
+
+        <!-- Effective Date Input -->
+        <Label id="labelEffectiveDate" text="Effective Date" />
+        <DatePicker id="inputEffectiveDate" placeholder="Enter effective date" value="{view>/effectiveDate}" editable="{view>/editMode}" />
+
+        <!-- Expiry Date Input -->
+        <Label id="labelExpiryDate" text="Expiry Date" />
+        <DatePicker id="inputExpiryDate" placeholder="Enter expiry date" value="{view>/expiryDate}" editable="{view>/editMode}" />
+
+        <!-- Submit Button -->
+        <Label id="submitlabel" text="" /> <!-- Empty label to maintain form structure -->
+        <Button 
+          id="buttonSubmit" 
+          text="Submit" 
+          type="Emphasized" 
+          press="onSubmitPress" />
+      </form:SimpleForm>
+
+      
       
     </VBox>
     
     <!-- Right Box for Goodbye Text, File Uploader, and Preview -->
     <VBox id="rightdiv" width="50%" justifyContent="Center" alignItems="Center">
-      
-      <!-- Goodbye Text -->
-      <Text id="textGoodbye" text="Goodbye, World!" />
 
       <!-- File Uploader Section -->
-      <l:VerticalLayout id="fileUploaderLayout"> <!-- Unique ID added -->
+      <l:VerticalLayout id="fileUploaderLayout">
         <u:FileUploader
           id="fileUploaderMain"
           name="myFileUpload"
@@ -45,7 +67,7 @@
           fileType="txt,jpg"
           placeholder="Choose a file for Upload...">
           
-          <!-- Parameters with Unique IDs -->
+          <!-- Parameters -->
           <u:parameters>
             <u:FileUploaderParameter
               id="fileUploaderParam1"
@@ -73,8 +95,15 @@
       <!-- File Preview Section -->
       <VBox id="previewContainer" width="100%" alignItems="Center" justifyContent="Center">
         <Text id="previewText" text="File Preview:" visible="false" />
-        <Image id="filePreview" visible="false" width="200px" height="200px" />
+        <Image id="filePreview" visible="false" width="100%" height="300px" />
       </VBox>
+
+      <!-- Proceed Button (Initially hidden) -->
+  <Button
+    id="proceedButton"
+    text="Next"
+    visible="false"
+    press="onProceedPress"/>
       
     </VBox>
   
