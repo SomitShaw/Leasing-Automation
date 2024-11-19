@@ -1,0 +1,83 @@
+<mvc:View
+  xmlns:mvc="sap.ui.core.mvc"
+  xmlns="sap.m"
+  xmlns:l="sap.ui.layout"
+  xmlns:u="sap.ui.unified"
+  controllerName="documentinfoextractor.controller.MainView">
+  
+  <!-- HBox for horizontal split layout -->
+  <HBox id="screendiv">
+    
+    <!-- Left Box for Inputs -->
+    <VBox id="leftdiv" width="50%" justifyContent="Center" alignItems="Start">
+      
+      <!-- Contract Type Input -->
+      <Label id="labelContractType" text="Contract Type" />
+      <Input id="inputContractType" placeholder="Enter contract type" />
+      
+      <!-- Effective Date Input -->
+      <Label id="labelEffectiveDate" text="Effective Date" />
+      <Input id="inputEffectiveDate" placeholder="Enter effective date" type="Date" />
+
+      <!-- Expiry Date Input -->
+      <Label id="labelExpiryDate" text="Expiry Date" />
+      <Input id="inputExpiryDate" placeholder="Enter expiry date" type="Date" />
+      
+    </VBox>
+    
+    <!-- Right Box for Goodbye Text, File Uploader, and Preview -->
+    <VBox id="rightdiv" width="50%" justifyContent="Center" alignItems="Center">
+      
+      <!-- Goodbye Text -->
+      <Text id="textGoodbye" text="Goodbye, World!" />
+
+      <!-- File Uploader Section -->
+      <l:VerticalLayout id="fileUploaderLayout"> <!-- Unique ID added -->
+        <u:FileUploader
+          id="fileUploaderMain"
+          name="myFileUpload"
+          uploadUrl="upload/"
+          tooltip="Upload your file to the local server"
+          uploadComplete="handleUploadComplete"
+          change="handleValueChange"
+          typeMissmatch="handleTypeMissmatch"
+          style="Emphasized"
+          fileType="txt,jpg"
+          placeholder="Choose a file for Upload...">
+          
+          <!-- Parameters with Unique IDs -->
+          <u:parameters>
+            <u:FileUploaderParameter
+              id="fileUploaderParam1"
+              name="Accept-CH"
+              value="Viewport-Width"/>
+            <u:FileUploaderParameter
+              id="fileUploaderParam2"
+              name="Accept-CH"
+              value="Width"/>
+            <u:FileUploaderParameter
+              id="fileUploaderParam3"
+              name="Accept-CH-Lifetime"
+              value="86400"/>
+          </u:parameters>
+          
+        </u:FileUploader>
+        
+        <!-- Upload Button -->
+        <Button
+          id="buttonUploadFile"
+          text="Upload File"
+          press="handleUploadPress"/>
+      </l:VerticalLayout>
+      
+      <!-- File Preview Section -->
+      <VBox id="previewContainer" width="100%" alignItems="Center" justifyContent="Center">
+        <Text id="previewText" text="File Preview:" visible="false" />
+        <Image id="filePreview" visible="false" width="200px" height="200px" />
+      </VBox>
+      
+    </VBox>
+  
+  </HBox>
+  
+</mvc:View>

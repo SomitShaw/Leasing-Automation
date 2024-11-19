@@ -1,0 +1,17 @@
+#helloworld {
+    background-color: lightblue;
+    padding: 20px;
+    border-radius: 10px;
+  }
+  
+  #goodbye {
+    background-color: lightcoral;
+    padding: 20px;
+    border-radius: 10px;
+  }
+  
+  #screendiv {
+    display: flex;
+    height: 100vh;
+  }
+  
