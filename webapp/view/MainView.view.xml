@@ -4,6 +4,7 @@
   xmlns:l="sap.ui.layout"
   xmlns:u="sap.ui.unified"
   xmlns:form="sap.ui.layout.form"
+  xmlns:core="sap.ui.core"
   controllerName="documentinfoextractor.controller.MainView">
   
   <!-- HBox for horizontal split layout -->
@@ -18,10 +19,6 @@
           <OverflowToolbar id="overflowtool">
             <Title id="title" text="Information Extraction:" />
             <ToolbarSpacer id="toolbarspacer" />
-            <!--ToggleButton
-              text="Edit"
-              type="Emphasized"
-              pressed="{path: 'view>/editMode'}" /-->
           </OverflowToolbar>
         </form:toolbar>
 
@@ -45,12 +42,10 @@
           type="Emphasized" 
           press="onSubmitPress" />
       </form:SimpleForm>
-
-      
       
     </VBox>
     
-    <!-- Right Box for Goodbye Text, File Uploader, and Preview -->
+    <!-- Right Box for File Upload, Preview, and Proceed Button -->
     <VBox id="rightdiv" width="50%" justifyContent="Center" alignItems="Center">
 
       <!-- File Uploader Section -->
@@ -64,7 +59,7 @@
           change="handleValueChange"
           typeMissmatch="handleTypeMissmatch"
           style="Emphasized"
-          fileType="txt,jpg"
+          fileType="txt,jpg,pdf"
           placeholder="Choose a file for Upload...">
           
           <!-- Parameters -->
@@ -84,29 +79,31 @@
           </u:parameters>
           
         </u:FileUploader>
-        
-        <!-- Upload Button -->
-        <Button
-          id="buttonUploadFile"
-          text="Upload File"
-          press="handleUploadPress"/>
       </l:VerticalLayout>
       
       <!-- File Preview Section -->
       <VBox id="previewContainer" width="100%" alignItems="Center" justifyContent="Center">
         <Text id="previewText" text="File Preview:" visible="false" />
+        
+        <!-- Image Preview -->
         <Image id="filePreview" visible="false" width="100%" height="300px" />
+
+        <!-- PDF Preview -->
+        <core:HTML
+          id="pdfViewer"
+          visible="false"
+          content="{view>/pdfContent}"
+          class="pdfViewerClass" />
       </VBox>
 
       <!-- Proceed Button (Initially hidden) -->
-  <Button
-    id="proceedButton"
-    text="Next"
-    visible="false"
-    press="onProceedPress"/>
+      <Button
+        id="proceedButton"
+        text="Next"
+        visible="false"
+        />
       
     </VBox>
   
   </HBox>
-  
 </mvc:View>

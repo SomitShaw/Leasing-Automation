@@ -79,23 +79,42 @@ sap.ui.define([
       var oFile = oEvent.getParameter("files")[0];
 
       if (oFile) {
-        var oReader = new FileReader();
+        var sFileType = oFile.type;
 
-        oReader.onload = function (e) {
-          // Set the preview image source and make it visible
-          var oImage = this.byId("filePreview");
-          oImage.setSrc(e.target.result);
-          oImage.setVisible(true);
+        // Reset the preview elements when a new file is selected
+        this.byId("filePreview").setVisible(false);
+        this.byId("filePreview").setSrc(""); // Clear the image preview
+        this.byId("pdfViewer").setVisible(false);
+        this.byId("pdfViewer").setContent(""); // Clear the PDF preview
 
-          // Show the "File Preview" text
-          this.byId("previewText").setVisible(true);
+        // PDF files need to be handled separately for preview
+        if (sFileType === "application/pdf") {
+          var oReader = new FileReader();
+          oReader.onload = function (e) {
+            // Set the PDF content into the HTML control to preview
+            var oPdfViewer = this.byId("pdfViewer");
+            oPdfViewer.setContent("<embed src='" + e.target.result + "' width='100%' height='400px' />");
+            oPdfViewer.setVisible(true);
+          }.bind(this);
 
-          // Make the Proceed button visible
-          this.byId("proceedButton").setVisible(true);
-        }.bind(this);
+          // Read the file as a Data URL for PDF preview
+          oReader.readAsDataURL(oFile);
+        } else {
+          // Handle image files (or others)
+          var oReader = new FileReader();
+          oReader.onload = function (e) {
+            var oImage = this.byId("filePreview");
+            oImage.setSrc(e.target.result);
+            oImage.setVisible(true);
+          }.bind(this);
 
-        // Read the file as a data URL for preview
-        oReader.readAsDataURL(oFile);
+          oReader.readAsDataURL(oFile);
+        }
+
+        // Show the "File Preview" text and make the Proceed button visible
+        this.byId("previewText").setVisible(true);
+        this.byId("proceedButton").setVisible(true);
+        
         MessageToast.show("File selected: " + oFile.name);
       } else {
         MessageToast.show("No file selected.");
