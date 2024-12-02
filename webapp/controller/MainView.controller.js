@@ -1,18 +1,24 @@
 sap.ui.define([
   "sap/m/MessageToast",
-  "sap/ui/core/mvc/Controller"
-], function (MessageToast, Controller) {
+  "sap/ui/core/mvc/Controller",
+  "sap/ui/core/BusyIndicator"
+], function (MessageToast, Controller, BusyIndicator) {
   "use strict";
 
   return Controller.extend("documentinfoextractor.controller.MainView", {
 
     onInit: function () {
-      // Initialization logic, if needed, can be added here
+      // Initialize a model for binding extracted data
+      var oModel = new sap.ui.model.json.JSONModel({
+        contractType: "",
+        effectiveDate: "",
+        expiryDate: ""
+      });
+      this.getView().setModel(oModel, "view");
     },
 
     /**
      * Handles the completion of file upload.
-     * Displays a success or error message based on the HTTP status code.
      */
     handleUploadComplete: function (oEvent) {
       var sResponse = oEvent.getParameter("response"),
@@ -30,10 +36,9 @@ sap.ui.define([
 
     /**
      * Handles the file upload button press.
-     * Ensures a file is selected and attempts to upload it.
      */
     handleUploadPress: function () {
-      var oFileUploader = this.byId("fileUploaderMain"); // Adjusted ID
+      var oFileUploader = this.byId("fileUploaderMain");
       if (!oFileUploader.getValue()) {
         MessageToast.show("Please choose a file before uploading.");
         return;
@@ -56,7 +61,6 @@ sap.ui.define([
 
     /**
      * Handles file type mismatch errors.
-     * Displays supported file types to the user.
      */
     handleTypeMissmatch: function (oEvent) {
       var aFileTypes = oEvent.getSource().getFileType();
@@ -73,7 +77,6 @@ sap.ui.define([
 
     /**
      * Handles changes in file input.
-     * Previews the selected file and shows a toast message.
      */
     handleValueChange: function (oEvent) {
       var oFile = oEvent.getParameter("files")[0];
@@ -81,40 +84,23 @@ sap.ui.define([
       if (oFile) {
         var sFileType = oFile.type;
 
-        // Reset the preview elements when a new file is selected
-        this.byId("filePreview").setVisible(false);
-        this.byId("filePreview").setSrc(""); // Clear the image preview
-        this.byId("pdfViewer").setVisible(false);
-        this.byId("pdfViewer").setContent(""); // Clear the PDF preview
+        // Reset the preview elements
+        this.byId("filePreview").setVisible(false).setSrc("");
+        this.byId("pdfViewer").setVisible(false).setContent("");
 
-        // PDF files need to be handled separately for preview
         if (sFileType === "application/pdf") {
           var oReader = new FileReader();
           oReader.onload = function (e) {
-            // Set the PDF content into the HTML control to preview
             var oPdfViewer = this.byId("pdfViewer");
             oPdfViewer.setContent("<embed src='" + e.target.result + "' width='100%' height='400px' />");
             oPdfViewer.setVisible(true);
+            this._uploadedFile = oFile; // Store file for upload
           }.bind(this);
-
-          // Read the file as a Data URL for PDF preview
-          oReader.readAsDataURL(oFile);
-        } else {
-          // Handle image files (or others)
-          var oReader = new FileReader();
-          oReader.onload = function (e) {
-            var oImage = this.byId("filePreview");
-            oImage.setSrc(e.target.result);
-            oImage.setVisible(true);
-          }.bind(this);
-
           oReader.readAsDataURL(oFile);
         }
 
-        // Show the "File Preview" text and make the Proceed button visible
         this.byId("previewText").setVisible(true);
         this.byId("proceedButton").setVisible(true);
-        
         MessageToast.show("File selected: " + oFile.name);
       } else {
         MessageToast.show("No file selected.");
@@ -123,11 +109,47 @@ sap.ui.define([
 
     /**
      * Handles the Proceed button press.
-     * Can be customized with further logic.
+     * Uploads the PDF to the backend and updates the fields with data from DOX.
      */
     onProceedPress: function () {
-      MessageToast.show("Proceeding with the selected file.");
-      // Add custom logic here for proceeding with the file
+      var oFile = this._uploadedFile;
+      if (!oFile) {
+        MessageToast.show("Please select a file before proceeding.");
+        return;
+      }
+
+      BusyIndicator.show(0); // Show busy indicator
+
+      var oFormData = new FormData();
+      oFormData.append("file", oFile);
+
+      // Backend endpoint for file upload and DOX processing
+      var sUrl = "/api/upload-to-dox";
+
+      fetch(sUrl, {
+        method: "POST",
+        body: oFormData
+      })
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            // Update the fields with extracted data
+            var oModel = this.getView().getModel("view");
+            oModel.setProperty("/contractType", data.extracted.contractType || "");
+            oModel.setProperty("/effectiveDate", data.extracted.effectiveDate || "");
+            oModel.setProperty("/expiryDate", data.extracted.expiryDate || "");
+            MessageToast.show("Fields updated with extracted data!");
+          } else {
+            MessageToast.show("Failed to retrieve data from DOX service.");
+          }
+        })
+        .catch(error => {
+          console.error("Error:", error);
+          MessageToast.show("An error occurred during the process.");
+        })
+        .finally(() => {
+          BusyIndicator.hide(); // Hide busy indicator
+        });
     }
   });
 });

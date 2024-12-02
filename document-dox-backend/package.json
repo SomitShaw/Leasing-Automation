@@ -1,0 +1,25 @@
+{
+  "name": "document-dox-backend",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "@sap-cloud-sdk/connectivity": "^3.24.0",
+    "@sap-cloud-sdk/http-client": "^3.24.0",
+    "@sap/xsenv": "^5.4.0",
+    "@sap/xssec": "^4.2.7",
+    "axios": "^1.7.8",
+    "body-parser": "^1.20.3",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.21.1",
+    "multer": "^1.4.5-lts.1",
+    "passport": "^0.7.0"
+  }
+}
