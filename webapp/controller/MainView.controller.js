@@ -8,7 +8,6 @@ sap.ui.define([
   return Controller.extend("documentinfoextractor.controller.MainView", {
 
     onInit: function () {
-      // Initialize a model for binding extracted data
       var oModel = new sap.ui.model.json.JSONModel({
         contractType: "",
         effectiveDate: "",
@@ -17,9 +16,6 @@ sap.ui.define([
       this.getView().setModel(oModel, "view");
     },
 
-    /**
-     * Handles the completion of file upload.
-     */
     handleUploadComplete: function (oEvent) {
       var sResponse = oEvent.getParameter("response"),
         iHttpStatusCode = parseInt(/\d{3}/.exec(sResponse)[0], 10),
@@ -34,9 +30,6 @@ sap.ui.define([
       }
     },
 
-    /**
-     * Handles the file upload button press.
-     */
     handleUploadPress: function () {
       var oFileUploader = this.byId("fileUploaderMain");
       if (!oFileUploader.getValue()) {
@@ -59,9 +52,6 @@ sap.ui.define([
         });
     },
 
-    /**
-     * Handles file type mismatch errors.
-     */
     handleTypeMissmatch: function (oEvent) {
       var aFileTypes = oEvent.getSource().getFileType();
       aFileTypes = aFileTypes.map(function (sType) {
@@ -75,9 +65,6 @@ sap.ui.define([
       );
     },
 
-    /**
-     * Handles changes in file input.
-     */
     handleValueChange: function (oEvent) {
       var oFile = oEvent.getParameter("files")[0];
 
@@ -107,10 +94,6 @@ sap.ui.define([
       }
     },
 
-    /**
-     * Handles the Proceed button press.
-     * Uploads the PDF to the backend and updates the fields with data from DOX.
-     */
     onProceedPress: function () {
       var oFile = this._uploadedFile;
       if (!oFile) {
@@ -140,7 +123,7 @@ sap.ui.define([
             oModel.setProperty("/expiryDate", data.extracted.expiryDate || "");
             MessageToast.show("Fields updated with extracted data!");
           } else {
-            MessageToast.show("Failed to retrieve data from DOX service.");
+            MessageToast.show(data.message || "Failed to retrieve data from DOX service.");
           }
         })
         .catch(error => {

@@ -8,10 +8,17 @@
     "sapui5"
   ],
   "main": "webapp/index.html",
-  "dependencies": {},
+  "dependencies": {
+    "@sap-cloud-sdk/connectivity": "^3.24.0",
+    "@sap/xsenv": "^5.4.0",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.1",
+    "fs": "^0.0.1-security",
+    "multer": "^1.4.5-lts.1"
+  },
   "devDependencies": {
-    "@ui5/cli": "^3.0.0",
-    "@sap/ux-ui5-tooling": "1"
+    "@sap/ux-ui5-tooling": "1",
+    "@ui5/cli": "^3.0.0"
   },
   "scripts": {
     "start": "fiori run --open \"test/flpSandbox.html?sap-ui-xx-viewCache=false#documentinfoextractor-display\"",

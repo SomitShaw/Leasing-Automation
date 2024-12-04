@@ -62,20 +62,20 @@
           fileType="txt,jpg,pdf"
           placeholder="Choose a file for Upload...">
           
-          <!-- Parameters -->
+          <!-- Parameters for Document Type, Schema, and Schema Version -->
           <u:parameters>
             <u:FileUploaderParameter
               id="fileUploaderParam1"
-              name="Accept-CH"
-              value="Viewport-Width"/>
+              name="Document-Type"
+              value="invoice"/> <!-- Set as per your requirement -->
             <u:FileUploaderParameter
               id="fileUploaderParam2"
-              name="Accept-CH"
-              value="Width"/>
+              name="Schema"
+              value="default"/> <!-- Adjust accordingly -->
             <u:FileUploaderParameter
               id="fileUploaderParam3"
-              name="Accept-CH-Lifetime"
-              value="86400"/>
+              name="Schema-Version"
+              value="1.0"/> <!-- Adjust accordingly -->
           </u:parameters>
           
         </u:FileUploader>
@@ -101,7 +101,7 @@
         id="proceedButton"
         text="Next"
         visible="false"
-        />
+        press="onProceedPress" />
       
     </VBox>
   
