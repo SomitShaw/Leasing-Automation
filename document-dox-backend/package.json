@@ -1,14 +1,22 @@
 {
   "name": "document-dox-backend",
   "version": "1.0.0",
-  "main": "index.js",
+  "description": "Backend service for document information extraction using SAP Document Information Extraction (DOX).",
+  "main": "server.js",
   "scripts": {
+    "start": "node server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": [
+    "document",
+    "information",
+    "extraction",
+    "SAP",
+    "DOX",
+    "backend"
+  ],
+  "author": "Your Name",
   "license": "ISC",
-  "description": "",
   "dependencies": {
     "@sap-cloud-sdk/connectivity": "^3.24.0",
     "@sap-cloud-sdk/http-client": "^3.24.0",
@@ -21,5 +29,8 @@
     "express": "^4.21.1",
     "multer": "^1.4.5-lts.1",
     "passport": "^0.7.0"
+  },
+  "engines": {
+    "node": ">=14.0.0"
   }
 }

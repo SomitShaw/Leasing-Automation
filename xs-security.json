@@ -1,0 +1,45 @@
+{
+    "xsappname": "documentinfoextractor",
+    "tenant-mode": "dedicated",
+    "scopes": [
+      {
+        "name": "$XSAPPNAME.User",
+        "description": "User scope",
+        "grant-as-authority-to-apps": ["$XSAPPNAME"]
+      },
+      {
+        "name": "$XSAPPNAME.Admin",
+        "description": "Admin scope",
+        "grant-as-authority-to-apps": ["$XSAPPNAME"]
+      }
+    ],
+    "authorities": [
+      "$ACCEPT_GRANTED_AUTHORITIES"
+    ],
+    "oauth2-configuration": {
+      "redirect-uris": [
+        "https://*.cfapps.eu10.hana.ondemand.com/**"
+      ]
+    }
+  }
+  
+
+  /*xsappname:
+
+The name of your application. Replace "documentinfoextractor" with the actual name of your app if different.
+tenant-mode:
+
+"dedicated" specifies a single tenant setup.
+Use "shared" if your application will be shared across multiple tenants.
+Scopes:
+
+Define roles like User and Admin for different access levels.
+The grant-as-authority-to-apps property allows granting authority to specific applications.
+Authorities:
+
+$ACCEPT_GRANTED_AUTHORITIES ensures users with granted roles can access the application.
+OAuth2 Configuration:
+
+The redirect-uris array specifies allowed callback URLs after user authentication.
+Replace eu10 with your region if different.
+*/

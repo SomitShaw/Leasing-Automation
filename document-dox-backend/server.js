@@ -1,83 +1,100 @@
 const express = require("express");
 const multer = require("multer");
+const xsenv = require("@sap/xsenv");
 const axios = require("axios");
-const fs = require("fs");
-require("dotenv").config();  // To load environment variables
-
 const app = express();
-const upload = multer({ dest: "uploads/" });
 
-// Middleware to parse JSON bodies (for documentType, schema, and schemaVersion)
+xsenv.loadEnv();
+const services = xsenv.getServices({ destination: { tag: "destination" } });
+
+const upload = multer();
 app.use(express.json());
 
-// Endpoint for uploading file and calling DOX
+// Endpoint for DOX POST
 app.post("/api/upload-to-dox", upload.single("file"), async (req, res) => {
   try {
-    // Retrieve the document type, schema, and schema version from the request body (or use default values)
-    const documentType = req.body.documentType || process.env.DOCUMENT_TYPE || "invoice"; // Default to "invoice"
-    const schema = req.body.schema || process.env.SCHEMA || "default"; // Default to "default"
-    const schemaVersion = req.body.schemaVersion || process.env.SCHEMA_VERSION || "1.0"; // Default to "1.0"
+    const file = req.file;
+    if (!file) {
+      return res.status(400).send({
+        success: false,
+        message: "No file uploaded",
+        metadata: {
+          documentType: null,
+          schema: null,
+          schemaVersion: null,
+        },
+      });
+    }
 
-    const filePath = req.file.path;
-
-    // Retrieve DOX destination from environment variables
-    const url = process.env.DOX_API_URL; // Base URL of the DOX service
-    const clientId = process.env.CLIENT_ID;
-    const clientSecret = process.env.CLIENT_SECRET;
-    const tokenUrl = process.env.TOKEN_URL;
-
-    // Get OAuth token using client credentials (OAuth2 Client Credentials Flow)
-    const authResponse = await axios.post(
-      tokenUrl,
-      `grant_type=client_credentials&client_id=${clientId}&client_secret=${clientSecret}`,
-      {
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded"
-        }
-      }
-    );
-
-    const accessToken = authResponse.data.access_token;
-
-    // Read the file and send to DOX API
-    const fileData = fs.readFileSync(filePath);
-
-    // Send request to DOX
+    // Sample DOX API Call
     const response = await axios.post(
-      `${url}/v1/document/jobs`, // Adjust the path as needed
+      process.env.DOX_API_URL,
       {
-        file: fileData,
-        documentType: documentType,
-        schema: schema,
-        schemaVersion: schemaVersion // Added schemaVersion
+        file: file.buffer.toString("base64"), // Send as base64
+        metadata: {
+          documentType: "contract",
+          schema: "contractSchema",
+          schemaVersion: "1.0",
+        },
       },
       {
         headers: {
-          "Authorization": `Bearer ${accessToken}`,
-          "Content-Type": "application/json"
-        }
+          Authorization: `Bearer ${await getToken()}`,
+          "Content-Type": "application/json",
+        },
       }
     );
 
-    // Map DOX response to your field names
-    const extractedData = {
-      contractType: response.data.fields.contractType,
-      effectiveDate: response.data.fields.effectiveDate,
-      expiryDate: response.data.fields.expiryDate
-    };
-
-    // Clean up uploaded file
-    fs.unlinkSync(filePath);
-
-    // Send extracted data back to frontend
-    res.json({ success: true, extracted: extractedData });
+    res.send({
+      success: true,
+      extracted: {
+        contractType: response.data.contractType,
+        effectiveDate: response.data.effectiveDate,
+        expiryDate: response.data.expiryDate,
+      },
+      metadata: {
+        documentType: "contract",
+        schema: "contractSchema",
+        schemaVersion: "1.0",
+      },
+    });
   } catch (error) {
-    console.error("Error processing file:", error);
-    res.status(500).json({ success: false, error: error.message });
+    console.error("Error:", error);
+    res.status(500).send({
+      success: false,
+      message: "Error in processing file",
+      metadata: {
+        documentType: "contract",
+        schema: "contractSchema",
+        schemaVersion: "1.0",
+      },
+    });
   }
 });
 
-// Start server
-app.listen(3000, () => {
-  console.log("Backend server running on port 3000");
+// Function to retrieve token
+async function getToken() {
+  const { data } = await axios.post(process.env.TOKEN_URL, null, {
+    auth: {
+      username: process.env.CLIENT_ID,
+      password: process.env.CLIENT_SECRET,
+    },
+  });
+  return data.access_token;
+}
+
+// Health Check
+app.get("/api/health", (req, res) => {
+  res.send({
+    success: true,
+    message: "Service is running",
+    metadata: {
+      documentType: "healthCheck",
+      schema: "healthSchema",
+      schemaVersion: "1.0",
+    },
+  });
 });
+
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

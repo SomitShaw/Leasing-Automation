@@ -1,0 +1,59 @@
+_schema-version: "3.3"
+ID: documentinfoextractor
+version: 1.0.0
+description: "Document Info Extractor Application"
+
+parameters:
+  enable-parallel-deployments: true
+
+modules:
+  - name: documentinfo-srv
+    type: nodejs
+    path: srv
+    parameters:
+      disk-quota: 256M
+      memory: 256M
+    requires:
+      - name: documentinfo-destination
+      - name: documentinfo-uaa
+    build-parameters:
+      builder: custom
+      commands:
+        - npm install
+        - npm start
+
+  - name: documentinfo-ui
+    type: html5
+    path: ui
+    requires:
+      - name: documentinfo-destination
+      - name: documentinfo-uaa
+    build-parameters:
+      builder: custom
+      commands:
+        - npm install
+        - npm run build
+
+resources:
+  - name: documentinfo-uaa
+    type: com.sap.xs.uaa
+    parameters:
+      config-path: ./xs-security.json
+
+  - name: documentinfo-destination
+    type: org.cloudfoundry.managed-service
+    parameters:
+      service: destination
+      service-plan: lite
+
+  - name: documentinfo-html5-repo-host
+    type: org.cloudfoundry.managed-service
+    parameters:
+      service: html5-apps-repo
+      service-plan: app-host
+
+  - name: documentinfo-html5-repo-runtime
+    type: org.cloudfoundry.managed-service
+    parameters:
+      service: html5-apps-repo
+      service-plan: app-runtime

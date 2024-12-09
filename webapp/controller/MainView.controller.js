@@ -6,7 +6,6 @@ sap.ui.define([
   "use strict";
 
   return Controller.extend("documentinfoextractor.controller.MainView", {
-
     onInit: function () {
       var oModel = new sap.ui.model.json.JSONModel({
         contractType: "",
@@ -105,6 +104,11 @@ sap.ui.define([
 
       var oFormData = new FormData();
       oFormData.append("file", oFile);
+
+      // Add required metadata for DOX processing
+      oFormData.append("documentType", "contract"); // Replace 'contract' with your document type
+      oFormData.append("schema", "defaultSchema"); // Replace 'defaultSchema' with your schema
+      oFormData.append("schemaVersion", "1.0"); // Replace '1.0' with your schema version
 
       // Backend endpoint for file upload and DOX processing
       var sUrl = "/api/upload-to-dox";
