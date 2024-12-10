@@ -3,14 +3,14 @@
     "tenant-mode": "dedicated",
     "scopes": [
       {
-        "name": "$XSAPPNAME.User",
+        "name": "documentinfoextractor.User",
         "description": "User scope",
-        "grant-as-authority-to-apps": ["$XSAPPNAME"]
+        "grant-as-authority-to-apps": ["documentinfoextractor"]
       },
       {
-        "name": "$XSAPPNAME.Admin",
+        "name": "documentinfoextractor.Admin",
         "description": "Admin scope",
-        "grant-as-authority-to-apps": ["$XSAPPNAME"]
+        "grant-as-authority-to-apps": ["documentinfoextractor"]
       }
     ],
     "authorities": [
@@ -22,24 +22,3 @@
       ]
     }
   }
-  
-
-  /*xsappname:
-
-The name of your application. Replace "documentinfoextractor" with the actual name of your app if different.
-tenant-mode:
-
-"dedicated" specifies a single tenant setup.
-Use "shared" if your application will be shared across multiple tenants.
-Scopes:
-
-Define roles like User and Admin for different access levels.
-The grant-as-authority-to-apps property allows granting authority to specific applications.
-Authorities:
-
-$ACCEPT_GRANTED_AUTHORITIES ensures users with granted roles can access the application.
-OAuth2 Configuration:
-
-The redirect-uris array specifies allowed callback URLs after user authentication.
-Replace eu10 with your region if different.
-*/

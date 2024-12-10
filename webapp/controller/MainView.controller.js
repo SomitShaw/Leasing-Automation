@@ -16,12 +16,10 @@ sap.ui.define([
     },
 
     handleUploadComplete: function (oEvent) {
-      var sResponse = oEvent.getParameter("response"),
-        iHttpStatusCode = parseInt(/\d{3}/.exec(sResponse)[0], 10),
-        sMessage;
-
+      var sResponse = oEvent.getParameter("response");
       if (sResponse) {
-        sMessage =
+        var iHttpStatusCode = parseInt(/\d{3}/.exec(sResponse)[0], 10);
+        var sMessage =
           iHttpStatusCode === 200
             ? sResponse + " (Upload Success)"
             : sResponse + " (Upload Error)";
@@ -117,7 +115,12 @@ sap.ui.define([
         method: "POST",
         body: oFormData
       })
-        .then(response => response.json())
+        .then(response => {
+          if (!response.ok) {
+            throw new Error(`Server returned status ${response.status}`);
+          }
+          return response.json();
+        })
         .then(data => {
           if (data.success) {
             // Update the fields with extracted data
@@ -127,12 +130,12 @@ sap.ui.define([
             oModel.setProperty("/expiryDate", data.extracted.expiryDate || "");
             MessageToast.show("Fields updated with extracted data!");
           } else {
-            MessageToast.show(data.message || "Failed to retrieve data from DOX service.");
+            throw new Error(data.message || "Failed to retrieve data from DOX service.");
           }
         })
         .catch(error => {
           console.error("Error:", error);
-          MessageToast.show("An error occurred during the process.");
+          MessageToast.show(error.message || "An error occurred during the process.");
         })
         .finally(() => {
           BusyIndicator.hide(); // Hide busy indicator
